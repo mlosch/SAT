@@ -1,0 +1,9 @@
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A1.PGDs0.1i7e0.5_B9.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A2.PGDs0.1i7e0.5_B8.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A3.PGDs0.1i7e0.5_B7.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A4.PGDs0.1i7e0.5_B6.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A5.PGDs0.1i7e0.5_B5.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A6.PGDs0.1i7e0.5_B4.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A7.PGDs0.1i7e0.5_B3.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A8.PGDs0.1i7e0.5_B2.none.yaml
+python -m tool.train --config config/cifar10/esat_pgd7_decreasing_entropy/preactresnet18bn_mpO1_10bins_A9.PGDs0.1i7e0.5_B1.none.yaml

@@ -1,0 +1,166 @@
+manual_seed: 123
+
+Distributed:
+  dist_url: tcp://127.0.0.1:6789
+  dist_backend: 'nccl'
+  multiprocessing_distributed: False
+  world_size: 1
+  rank: 0
+
+training_data:
+  type: 'CIFAR10WithIndex'
+  kwargs:
+    root: '~/data/'
+    train: True
+  transformation:
+    crop:
+      type: 'torchvision.transforms.RandomCrop'
+      args: [32, 4]  #size, padding
+    flip: 
+      type: 'torchvision.transforms.RandomHorizontalFlip'
+    colorjitter:
+      type: 'torchvision.transforms.ColorJitter'
+      args: [.25, .25, .25]
+    rotation:
+      type: 'torchvision.transforms.RandomRotation'
+      args: [2]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+validation_data:
+  type: 'CIFAR10WithIndex'
+  kwargs:
+    root: '~/data/'
+    train: False
+  transformation:
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+architecture:
+  type: 'BaseModel'
+
+  initialization:
+    conv: 'kaiming'
+    linear: 'kaiming'
+
+  layers:
+    conv1: 
+      type: 'nn.Conv2d'
+      args: [3, 64, 3]
+      stride: 1
+      padding: 1
+      bias: False
+    stage1_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 64
+      planes: 128
+      stride: 1
+    stage1_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 128
+      planes: 128
+      stride: 1
+    stage2_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 128
+      planes: 256
+      stride: 2
+    stage2_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 256
+      planes: 256
+      stride: 1
+    stage3_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 256
+      planes: 512
+      stride: 2
+    stage3_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage4_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 2
+    stage4_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage4_bn:
+      type: 'nn.BatchNorm2d'
+      num_features: 512
+    stage4_relu:
+      type: 'nn.ReLU'
+      inplace: True
+    avg_pool:
+      type: 'nn.AdaptiveAvgPool2d'
+      args: [1]
+    flatten:
+      type: 'Flatten'
+      dim: 1
+    fc:
+      type: 'nn.Linear'
+      args: [512, 10]
+
+loss:
+  nll:
+    type: 'nn.CrossEntropyLoss'
+
+metrics:
+  cleanacc:
+    type: 'Accuracy'
+    topk: 1
+  confmat:
+    type: 'ConfusionMatrixMetric'
+    num_classes: 10
+    labels: ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+  classwise_entropies:
+    type: 'ClasswiseEntropy'
+    x_labels: ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+    save_path: exp/cifar10/vanilla/$MODELNAME/classwise_entropies/
+  fc_dumper:
+    type: 'OutputDumper'
+    layer: 'fc'
+    save_path: exp/cifar10/vanilla/$MODELNAME/FCdump/
+  target_dumper:
+    type: 'OutputDumper'
+    layer: 'target'
+    save_path: exp/cifar10/vanilla/$MODELNAME/FCdump/
+  imageindices_dumper:
+    type: 'OutputDumper'
+    layer: 'imids'
+    save_path: exp/cifar10/vanilla/$MODELNAME/FCdump/
+
+training:
+  epochs: 201
+  batch_size: 128  # batch size for training
+  
+  sync_bn: True
+  workers: 4  # data loader workers
+  train_gpu: [0]
+
+  print_freq: 100
+  save_freq: 1
+  save_path: exp/cifar10/vanilla/$MODELNAME/model
+
+  # resume: exp/cifar10/vanilla/$MODELNAME/model/train_epoch_49.pth
+  # evaluate_only: True 
+
+  optimizer:
+    type: 'SGD'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 5.e-4
+  lrscheduler:
+    type: 'MultiStepLR'
+    gamma: 0.1
+    milestones: [39000, 58500]
+    
+
+validate:
+  batch_size: 1000 # batch size for validation during training, memory and speed tradeoff
+  print_freq: 10

@@ -1,0 +1,9 @@
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A10.PGDs0.1i7e0.5_B90.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A20.PGDs0.1i7e0.5_B80.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A30.PGDs0.1i7e0.5_B70.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A40.PGDs0.1i7e0.5_B60.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A50.PGDs0.1i7e0.5_B50.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A60.PGDs0.1i7e0.5_B40.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A70.PGDs0.1i7e0.5_B30.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A80.PGDs0.1i7e0.5_B20.none.yaml
+python -m tool.train --config config/cifar100/weightedincreasing2to10_csat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A90.PGDs0.1i7e0.5_B10.none.yaml

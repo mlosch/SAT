@@ -1,0 +1,338 @@
+manual_seed: 123
+
+Distributed:
+  dist_url: tcp://127.0.0.1:6789
+  dist_backend: 'nccl'
+  multiprocessing_distributed: True
+  world_size: 1
+  rank: 0
+
+training_data:
+  type: 'OxfordFlowers102'
+  kwargs:
+    root: '~/data/oxford-flowers/'
+    split: 'train'
+  transformation:
+    crop:
+      type: 'torchvision.transforms.RandomResizedCrop'
+      args: [224]  #size, padding
+    flip: 
+      type: 'torchvision.transforms.RandomHorizontalFlip'
+    colorjitter:
+      type: 'torchvision.transforms.ColorJitter'
+      args: [.1, .1, .1]
+    rotation:
+      type: 'torchvision.transforms.RandomRotation'
+      args: [2]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+validation_data:
+  type: 'OxfordFlowers102'
+  kwargs:
+    root: '~/data/oxford-flowers/'
+    split: 'val'
+  transformation:
+    resize:
+      type: 'torchvision.transforms.Resize'
+      args: [256]
+    crop:
+      type: 'torchvision.transforms.CenterCrop'
+      args: [224]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+architecture:
+  type: 'AttackerModel'
+  kwargs:
+    p: .inf
+    eps: 0.031372549019608  # 8 / 255
+    step_size: 0.007843137254902  # 2 / 255
+    iterations: 0
+    loss_name: 'nn.CrossEntropyLoss'
+    use_best: True
+    random_start: False
+    data_mean: [0.485, 0.456, 0.406]
+    data_std: [0.229, 0.224, 0.225]
+
+  initialization:
+    conv: 'kaiming'
+    linear: 'kaiming'
+
+  layers:
+    conv1: 
+      type: 'nn.Conv2d'
+      args: [3, 64, 7]
+      stride: 2
+      padding: 3
+      bias: False
+    bn1:
+      type: 'nn.BatchNorm2d'
+      num_features: 64
+    relu1:
+      type: 'nn.ReLU'
+      inplace: True
+    pool1:
+      type: 'nn.MaxPool2d'
+      args: [3, 2, 1]
+
+    stage1_1:
+      type: 'ResNetBottleneck'
+      inplanes: 64
+      planes: 256
+      stride: 1
+    stage1_2:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+    stage1_3:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+
+    stage2_1:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 512
+      stride: 2
+    stage2_2:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_3:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_4:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+
+    stage3_1:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 1024
+      stride: 2
+    stage3_2:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_3:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_4:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_5:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_6:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+
+
+    stage4_1:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 2048
+      stride: 2
+    stage4_2:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+    stage4_3:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+
+    avg_pool:
+      type: 'nn.AdaptiveAvgPool2d'
+      args: [1]
+    flatten:
+      type: 'Flatten'
+      dim: 1
+    fc1:
+      type: 'nn.Linear'
+      args: [2048, 2048]
+    fc1_relu:
+      type: 'nn.ReLU'
+      inplace: True
+    fc:
+      type: 'nn.Linear'
+      args: [2048, 102]
+
+loss:
+  nll:
+    type: 'nn.CrossEntropyLoss'
+
+metrics:
+  cleanacc:
+    type: 'Accuracy'
+    topk: 1
+
+
+evaluations:
+  auto_attack_linf:
+    type: 'AutoAttackDomainAccuracy'
+    eval_freq: [15, 51, 76, 100]
+    robust_logit_index: 
+    batch_size: 102
+    n_samples: 1020
+    # attacks_to_run: ['apgd-ce', 'apgd-t']
+    norm_p: .inf
+    data_mean: [0, 0, 0]
+    data_std: [1, 1, 1]
+    epsilons: [0.031372549019608]
+    domains:
+      all: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101]
+      class0: [0]
+      class1: [1]
+      class2: [2]
+      class3: [3]
+      class4: [4]
+      class5: [5]
+      class6: [6]
+      class7: [7]
+      class8: [8]
+      class9: [9]
+      class10: [10]
+      class11: [11]
+      class12: [12]
+      class13: [13]
+      class14: [14]
+      class15: [15]
+      class16: [16]
+      class17: [17]
+      class18: [18]
+      class19: [19]
+      class20: [20]
+      class21: [21]
+      class22: [22]
+      class23: [23]
+      class24: [24]
+      class25: [25]
+      class26: [26]
+      class27: [27]
+      class28: [28]
+      class29: [29]
+      class30: [30]
+      class31: [31]
+      class32: [32]
+      class33: [33]
+      class34: [34]
+      class35: [35]
+      class36: [36]
+      class37: [37]
+      class38: [38]
+      class39: [39]
+      class40: [40]
+      class41: [41]
+      class42: [42]
+      class43: [43]
+      class44: [44]
+      class45: [45]
+      class46: [46]
+      class47: [47]
+      class48: [48]
+      class49: [49]
+      class50: [50]
+      class51: [51]
+      class52: [52]
+      class53: [53]
+      class54: [54]
+      class55: [55]
+      class56: [56]
+      class57: [57]
+      class58: [58]
+      class59: [59]
+      class60: [60]
+      class61: [61]
+      class62: [62]
+      class63: [63]
+      class64: [64]
+      class65: [65]
+      class66: [66]
+      class67: [67]
+      class68: [68]
+      class69: [69]
+      class70: [70]
+      class71: [71]
+      class72: [72]
+      class73: [73]
+      class74: [74]
+      class75: [75]
+      class76: [76]
+      class77: [77]
+      class78: [78]
+      class79: [79]
+      class80: [80]
+      class81: [81]
+      class82: [82]
+      class83: [83]
+      class84: [84]
+      class85: [85]
+      class86: [86]
+      class87: [87]
+      class88: [88]
+      class89: [89]
+      class90: [90]
+      class91: [91]
+      class92: [92]
+      class93: [93]
+      class94: [94]
+      class95: [95]
+      class96: [96]
+      class97: [97]
+      class98: [98]
+      class99: [99]
+      class100: [100]
+      class101: [101]
+      
+training:
+  epochs: 101
+  batch_size: 102  # batch size for training
+  
+  sync_bn: True
+  workers: 8  # data loader workers
+  train_gpu: [0]
+
+  print_freq: 10
+  save_freq: 1
+  save_path: exp/oxford-flowers/Linf_transferred_from_imagenet200_SESAT_weightedincreasing2to10/$MODELNAME/model
+
+  pretrained_weights: exp/imagenet200/Linf_weightedincreasing2to10_esat_pgd7_increasing_entropy/resnet50_A9.PGDs0.5i7e3.0_B1.none/model/best_rob_acc.pth
+  # resume: exp/cifar100/vanilla_pgd7/$MODELNAME/model/best_rob_acc.pth
+  # evaluate_only: True 
+  freeze_bn: True
+
+  optimizer:
+    type: 'SGD'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 1.e-4
+    layers: ['fc1', 'fc']
+  lrscheduler:
+    type: 'MultiStepLR'
+    gamma: 0.1
+    milestones: [500, 750]  # total ImageNet batches: 5004
+    
+
+validate:
+  batch_size: 1000 # batch size for validation during training, memory and speed tradeoff
+  print_freq: 10

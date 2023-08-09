@@ -1,0 +1,197 @@
+manual_seed: 123
+
+Distributed:
+  dist_url: tcp://127.0.0.1:6789
+  dist_backend: 'nccl'
+  multiprocessing_distributed: False
+  world_size: 1
+  rank: 0
+
+training_data:
+  type: 'torchvision.datasets.CIFAR10'
+  kwargs:
+    root: '~/data/'
+    train: True
+  transformation:
+    crop:
+      type: 'torchvision.transforms.RandomCrop'
+      args: [32, 4]  #size, padding
+    flip: 
+      type: 'torchvision.transforms.RandomHorizontalFlip'
+    colorjitter:
+      type: 'torchvision.transforms.ColorJitter'
+      args: [.25, .25, .25]
+    rotation:
+      type: 'torchvision.transforms.RandomRotation'
+      args: [2]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+validation_data:
+  type: 'torchvision.datasets.CIFAR10'
+  kwargs:
+    root: '~/data/'
+    train: False
+  transformation:
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+architecture:
+  type: 'AttackerModel'
+  kwargs:
+    p: 2
+    eps: 0.5
+    step_size: 0.1
+    iterations: 0
+    loss_name: 'nn.CrossEntropyLoss'
+    data_mean: [0.4914, 0.4822, 0.4465]
+    data_std: [0.2023, 0.1994, 0.2010]
+
+  initialization:
+    conv: 'kaiming'
+    linear: 'kaiming'
+
+  layers:
+    conv1: 
+      type: 'nn.Conv2d'
+      args: [3, 64, 3]
+      stride: 1
+      padding: 1
+      bias: False
+    stage1_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 64
+      planes: 128
+      stride: 1
+    stage1_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 128
+      planes: 128
+      stride: 1
+    stage2_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 128
+      planes: 256
+      stride: 2
+    stage2_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 256
+      planes: 256
+      stride: 1
+    stage3_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 256
+      planes: 512
+      stride: 2
+    stage3_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage4_1:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 2
+    stage4_2:
+      type: 'PreActBasicResNetBlock'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage4_bn:
+      type: 'nn.BatchNorm2d'
+      num_features: 512
+    stage4_relu:
+      type: 'nn.ReLU'
+      inplace: True
+    avg_pool:
+      type: 'nn.AdaptiveAvgPool2d'
+      args: [1]
+    flatten:
+      type: 'Flatten'
+      dim: 1
+    fc1:
+      type: 'nn.Linear'
+      args: [512, 512]
+    fc1_relu:
+      type: 'nn.ReLU'
+      inplace: True
+    fc:
+      type: 'nn.Linear'
+      args: [512, 10]
+
+loss:
+  nll:
+    type: 'nn.CrossEntropyLoss'
+
+metrics:
+  cleanacc:
+    type: 'Accuracy'
+    topk: 1
+  confmat:
+    type: 'ConfusionMatrixMetric'
+    num_classes: 10
+    labels: ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+evaluations:
+  auto_attack_l2:
+    type: 'AutoAttackDomainAccuracy'
+    eval_freq: [5, 21, 31, 40]
+    robust_logit_index: 
+    # eval_mode: True
+    batch_size: 1000
+    n_samples: 1000
+#    attacks_to_run: ['apgd-ce', 'apgd-t']
+    norm_p: 2
+    data_mean: [0, 0, 0]
+    data_std: [1, 1, 1]
+    epsilons: [0.5]  #2/255, 4/255, 8/255
+    domains:
+      all: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      class0: [0]
+      class1: [1]
+      class2: [2]
+      class3: [3]
+      class4: [4]
+      class5: [5]
+      class6: [6]
+      class7: [7]
+      class8: [8]
+      class9: [9]
+
+
+training:
+  epochs: 41
+  batch_size: 128  # batch size for training
+  
+  sync_bn: True
+  workers: 4  # data loader workers
+  train_gpu: [0]
+
+  print_freq: 100
+  save_freq: 1
+  save_path: exp/cifar10/transferred_from_cifar100_SESAT_weightedincreasing2to10/$MODELNAME/model
+
+  pretrained_weights: exp/cifar100/weightedincreasing2to10_esat_pgd7_decreasing_entropy/preactresnet18bn_unevensets_A90.PGDs0.1i7e0.5_B10.none/model/best_rob_acc.pth
+  # resume: exp/cifar10/transferred_from_cifar100_SESAT_weightedincreasing2to10/$MODELNAME/model/train_epoch_20.pth
+  # evaluate_only: True 
+  freeze_bn: True
+
+  mixed_precision:
+    opt_level: 'O1'
+
+  optimizer:
+    type: 'SGD'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 5.e-4
+    layers: ['fc1', 'fc']
+  lrscheduler:
+    type: 'MultiStepLR'
+    gamma: 0.1
+    milestones: [7800, 11700]
+    
+
+validate:
+  batch_size: 1000 # batch size for validation during training, memory and speed tradeoff
+  print_freq: 10

@@ -1,0 +1,9 @@
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A1.PGDs0.5i7e3.0_B9.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A2.PGDs0.5i7e3.0_B8.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A3.PGDs0.5i7e3.0_B7.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A4.PGDs0.5i7e3.0_B6.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A5.PGDs0.5i7e3.0_B5.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A6.PGDs0.5i7e3.0_B4.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A7.PGDs0.5i7e3.0_B3.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A8.PGDs0.5i7e3.0_B2.none.yaml
+python -m tool.train --config config/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/resnet50_A9.PGDs0.5i7e3.0_B1.none.yaml

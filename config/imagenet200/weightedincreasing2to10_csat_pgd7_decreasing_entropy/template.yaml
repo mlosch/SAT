@@ -1,0 +1,243 @@
+manual_seed: 123
+
+Distributed:
+  dist_url: tcp://127.0.0.1:6789
+  dist_backend: 'nccl'
+  multiprocessing_distributed: True
+  world_size: 1
+  rank: 0
+
+training_data:
+  type: 'SubsetImageNetWithIndices'
+  kwargs:
+    root: '~/data/imagenet/'
+    split: 'train'
+    wnid_selection: ['n01498041', 'n01531178', 'n01534433', 'n01558993', 'n01580077', 'n01614925', 'n01616318', 'n01631663', 'n01641577', 'n01669191', 'n01677366', 'n01687978', 'n01694178', 'n01698640', 'n01735189', 'n01770081', 'n01770393', 'n01774750', 'n01784675', 'n01819313', 'n01820546', 'n01833805', 'n01843383', 'n01847000', 'n01855672', 'n01882714', 'n01910747', 'n01914609', 'n01924916', 'n01944390', 'n01985128', 'n01986214', 'n02007558', 'n02009912', 'n02037110', 'n02051845', 'n02077923', 'n02085620', 'n02099601', 'n02106550', 'n02106662', 'n02110958', 'n02119022', 'n02123394', 'n02127052', 'n02129165', 'n02133161', 'n02137549', 'n02165456', 'n02174001', 'n02177972', 'n02190166', 'n02206856', 'n02219486', 'n02226429', 'n02231487', 'n02233338', 'n02236044', 'n02259212', 'n02268443', 'n02279972', 'n02280649', 'n02281787', 'n02317335', 'n02325366', 'n02346627', 'n02356798', 'n02361337', 'n02410509', 'n02445715', 'n02454379', 'n02486410', 'n02492035', 'n02504458', 'n02655020', 'n02669723', 'n02672831', 'n02676566', 'n02690373', 'n02701002', 'n02730930', 'n02777292', 'n02782093', 'n02787622', 'n02793495', 'n02797295', 'n02802426', 'n02814860', 'n02815834', 'n02837789', 'n02879718', 'n02883205', 'n02895154', 'n02906734', 'n02948072', 'n02951358', 'n02980441', 'n02992211', 'n02999410', 'n03014705', 'n03026506', 'n03124043', 'n03125729', 'n03187595', 'n03196217', 'n03223299', 'n03250847', 'n03255030', 'n03291819', 'n03325584', 'n03355925', 'n03384352', 'n03388043', 'n03417042', 'n03443371', 'n03444034', 'n03445924', 'n03452741', 'n03483316', 'n03584829', 'n03590841', 'n03594945', 'n03617480', 'n03666591', 'n03670208', 'n03717622', 'n03720891', 'n03721384', 'n03724870', 'n03775071', 'n03788195', 'n03804744', 'n03837869', 'n03840681', 'n03854065', 'n03888257', 'n03891332', 'n03935335', 'n03982430', 'n04019541', 'n04033901', 'n04039381', 'n04067472', 'n04086273', 'n04099969', 'n04118538', 'n04131690', 'n04133789', 'n04141076', 'n04146614', 'n04147183', 'n04179913', 'n04208210', 'n04235860', 'n04252077', 'n04252225', 'n04254120', 'n04270147', 'n04275548', 'n04310018', 'n04317175', 'n04344873', 'n04347754', 'n04355338', 'n04366367', 'n04376876', 'n04389033', 'n04399382', 'n04442312', 'n04456115', 'n04482393', 'n04507155', 'n04509417', 'n04532670', 'n04540053', 'n04554684', 'n04562935', 'n04591713', 'n04606251', 'n07583066', 'n07695742', 'n07697313', 'n07697537', 'n07714990', 'n07718472', 'n07720875', 'n07734744', 'n07749582', 'n07753592', 'n07760859', 'n07768694', 'n07831146', 'n09229709', 'n09246464', 'n09472597', 'n09835506', 'n11879895', 'n12057211', 'n12144580', 'n12267677']
+  transformation:
+    crop:
+      type: 'torchvision.transforms.RandomResizedCrop'
+      args: [224]  #size, padding
+    flip: 
+      type: 'torchvision.transforms.RandomHorizontalFlip'
+    colorjitter:
+      type: 'torchvision.transforms.ColorJitter'
+      args: [.1, .1, .1]
+    rotation:
+      type: 'torchvision.transforms.RandomRotation'
+      args: [2]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+validation_data:
+  type: 'SubsetImageNetWithIndices'
+  kwargs:
+    root: '~/data/imagenet/'
+    split: 'val'
+    wnid_selection: ['n01498041', 'n01531178', 'n01534433', 'n01558993', 'n01580077', 'n01614925', 'n01616318', 'n01631663', 'n01641577', 'n01669191', 'n01677366', 'n01687978', 'n01694178', 'n01698640', 'n01735189', 'n01770081', 'n01770393', 'n01774750', 'n01784675', 'n01819313', 'n01820546', 'n01833805', 'n01843383', 'n01847000', 'n01855672', 'n01882714', 'n01910747', 'n01914609', 'n01924916', 'n01944390', 'n01985128', 'n01986214', 'n02007558', 'n02009912', 'n02037110', 'n02051845', 'n02077923', 'n02085620', 'n02099601', 'n02106550', 'n02106662', 'n02110958', 'n02119022', 'n02123394', 'n02127052', 'n02129165', 'n02133161', 'n02137549', 'n02165456', 'n02174001', 'n02177972', 'n02190166', 'n02206856', 'n02219486', 'n02226429', 'n02231487', 'n02233338', 'n02236044', 'n02259212', 'n02268443', 'n02279972', 'n02280649', 'n02281787', 'n02317335', 'n02325366', 'n02346627', 'n02356798', 'n02361337', 'n02410509', 'n02445715', 'n02454379', 'n02486410', 'n02492035', 'n02504458', 'n02655020', 'n02669723', 'n02672831', 'n02676566', 'n02690373', 'n02701002', 'n02730930', 'n02777292', 'n02782093', 'n02787622', 'n02793495', 'n02797295', 'n02802426', 'n02814860', 'n02815834', 'n02837789', 'n02879718', 'n02883205', 'n02895154', 'n02906734', 'n02948072', 'n02951358', 'n02980441', 'n02992211', 'n02999410', 'n03014705', 'n03026506', 'n03124043', 'n03125729', 'n03187595', 'n03196217', 'n03223299', 'n03250847', 'n03255030', 'n03291819', 'n03325584', 'n03355925', 'n03384352', 'n03388043', 'n03417042', 'n03443371', 'n03444034', 'n03445924', 'n03452741', 'n03483316', 'n03584829', 'n03590841', 'n03594945', 'n03617480', 'n03666591', 'n03670208', 'n03717622', 'n03720891', 'n03721384', 'n03724870', 'n03775071', 'n03788195', 'n03804744', 'n03837869', 'n03840681', 'n03854065', 'n03888257', 'n03891332', 'n03935335', 'n03982430', 'n04019541', 'n04033901', 'n04039381', 'n04067472', 'n04086273', 'n04099969', 'n04118538', 'n04131690', 'n04133789', 'n04141076', 'n04146614', 'n04147183', 'n04179913', 'n04208210', 'n04235860', 'n04252077', 'n04252225', 'n04254120', 'n04270147', 'n04275548', 'n04310018', 'n04317175', 'n04344873', 'n04347754', 'n04355338', 'n04366367', 'n04376876', 'n04389033', 'n04399382', 'n04442312', 'n04456115', 'n04482393', 'n04507155', 'n04509417', 'n04532670', 'n04540053', 'n04554684', 'n04562935', 'n04591713', 'n04606251', 'n07583066', 'n07695742', 'n07697313', 'n07697537', 'n07714990', 'n07718472', 'n07720875', 'n07734744', 'n07749582', 'n07753592', 'n07760859', 'n07768694', 'n07831146', 'n09229709', 'n09246464', 'n09472597', 'n09835506', 'n11879895', 'n12057211', 'n12144580', 'n12267677']
+  transformation:
+    resize:
+      type: 'torchvision.transforms.Resize'
+      args: [256]
+    crop:
+      type: 'torchvision.transforms.CenterCrop'
+      args: [224]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+
+architecture:
+  type: 'DomainAttackerModel'
+  kwargs:
+    attacked_domain1: {A}
+    p_domain1: 2
+    eps_domain1: 3.0
+    step_size_domain1: 0.5
+    it_domain1: 7
+    loss_name: 'nn.CrossEntropyLoss'
+    use_best: True
+    random_start: False
+    data_mean: [0.485, 0.456, 0.406]
+    data_std: [0.229, 0.224, 0.225]
+
+  initialization:
+    conv: 'kaiming'
+    linear: 'kaiming'
+
+  layers:
+    conv1: 
+      type: 'nn.Conv2d'
+      args: [3, 64, 7]
+      stride: 2
+      padding: 3
+      bias: False
+    bn1:
+      type: 'nn.BatchNorm2d'
+      num_features: 64
+    relu1:
+      type: 'nn.ReLU'
+      inplace: True
+    pool1:
+      type: 'nn.MaxPool2d'
+      args: [3, 2, 1]
+
+    stage1_1:
+      type: 'ResNetBottleneck'
+      inplanes: 64
+      planes: 256
+      stride: 1
+    stage1_2:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+    stage1_3:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+
+    stage2_1:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 512
+      stride: 2
+    stage2_2:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_3:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_4:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+
+    stage3_1:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 1024
+      stride: 2
+    stage3_2:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_3:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_4:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_5:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_6:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+
+
+    stage4_1:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 2048
+      stride: 2
+    stage4_2:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+    stage4_3:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+    avg_pool:
+      type: 'nn.AdaptiveAvgPool2d'
+      args: [1]
+    flatten:
+      type: 'Flatten'
+      dim: 1
+    fc:
+      type: 'nn.Linear'
+      args: [2048, 200]
+
+loss:
+  nll:
+    type: 'nn.CrossEntropyLoss'
+    CAST_TENSOR_weight: {weight}
+
+metrics:
+  cleanacc:
+    type: 'Accuracy'
+    topk: 1
+  domainA_acc:
+    type: 'DomainAccuracy'
+    domain: {A}
+  domainB_acc:
+    type: 'DomainAccuracy'
+    domain: {B}
+
+
+evaluations:
+  auto_attack_l2:
+    type: 'AutoAttackDomainAccuracy'
+    eval_freq: [51, 101, 150]
+    robust_logit_index: 
+    batch_size: 200
+    n_samples: 1000
+    attacks_to_run: ['apgd-ce', 'apgd-t']
+    norm_p: 2
+    data_mean: [0, 0, 0]
+    data_std: [1, 1, 1]
+    epsilons: [3.0]
+    domains:
+      all: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199]
+      A: {A}
+      B: {B}
+
+training:
+  epochs: 151
+  batch_size: 256  # batch size for training
+  
+  sync_bn: True
+  workers: 8  # data loader workers
+  train_gpu: [0]
+
+  print_freq: 100
+  save_freq: 1
+  save_path: exp/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/$MODELNAME/model
+
+  # resume: exp/imagenet200/weightedincreasing2to10_csat_pgd7_decreasing_entropy/$MODELNAME/model/best_rob_acc.pth
+  # evaluate_only: True 
+
+  # mixed_precision:
+  #   opt_level: 'O1'
+  #   loss_scale: 'dynamic'
+
+  optimizer:
+    type: 'SGD'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 1.e-4
+  lrscheduler:
+    type: 'MultiStepLR'
+    gamma: 0.1
+    milestones: [50750, 101500]  # total ImageNet-A batches: 1015
+    
+
+validate:
+  batch_size: 1000 # batch size for validation during training, memory and speed tradeoff
+  print_freq: 10

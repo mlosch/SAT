@@ -1,0 +1,235 @@
+manual_seed: 123
+
+Distributed:
+  dist_url: tcp://127.0.0.1:6789
+  dist_backend: 'nccl'
+  multiprocessing_distributed: True
+  world_size: 1
+  rank: 0
+
+training_data:
+  type: 'Caltech256'
+  kwargs:
+    root: '~/data/caltech256/256_ObjectCategories'
+    split: 'train'
+  transformation:
+    crop:
+      type: 'torchvision.transforms.RandomResizedCrop'
+      args: [224]  #size, padding
+    flip: 
+      type: 'torchvision.transforms.RandomHorizontalFlip'
+    colorjitter:
+      type: 'torchvision.transforms.ColorJitter'
+      args: [.1, .1, .1]
+    rotation:
+      type: 'torchvision.transforms.RandomRotation'
+      args: [2]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+validation_data:
+  type: 'Caltech256'
+  kwargs:
+    root: '~/data/caltech256/256_ObjectCategories'
+    split: 'val'
+  transformation:
+    resize:
+      type: 'torchvision.transforms.Resize'
+      args: [256]
+    crop:
+      type: 'torchvision.transforms.CenterCrop'
+      args: [224]
+    totensor:
+      type: 'torchvision.transforms.ToTensor'
+
+architecture:
+  type: 'AttackerModel'
+  kwargs:
+    p: .inf
+    eps: 0.031372549019608  # 8 / 255
+    step_size: 0.007843137254902  # 2 / 255
+    iterations: 0
+    loss_name: 'nn.CrossEntropyLoss'
+    use_best: True
+    random_start: False
+    data_mean: [0.485, 0.456, 0.406]
+    data_std: [0.229, 0.224, 0.225]
+
+  initialization:
+    conv: 'kaiming'
+    linear: 'kaiming'
+
+  layers:
+    conv1: 
+      type: 'nn.Conv2d'
+      args: [3, 64, 7]
+      stride: 2
+      padding: 3
+      bias: False
+    bn1:
+      type: 'nn.BatchNorm2d'
+      num_features: 64
+    relu1:
+      type: 'nn.ReLU'
+      inplace: True
+    pool1:
+      type: 'nn.MaxPool2d'
+      args: [3, 2, 1]
+
+    stage1_1:
+      type: 'ResNetBottleneck'
+      inplanes: 64
+      planes: 256
+      stride: 1
+    stage1_2:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+    stage1_3:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 256
+      stride: 1
+
+    stage2_1:
+      type: 'ResNetBottleneck'
+      inplanes: 256
+      planes: 512
+      stride: 2
+    stage2_2:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_3:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+    stage2_4:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 512
+      stride: 1
+
+    stage3_1:
+      type: 'ResNetBottleneck'
+      inplanes: 512
+      planes: 1024
+      stride: 2
+    stage3_2:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_3:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_4:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_5:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+    stage3_6:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 1024
+      stride: 1
+
+
+    stage4_1:
+      type: 'ResNetBottleneck'
+      inplanes: 1024
+      planes: 2048
+      stride: 2
+    stage4_2:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+    stage4_3:
+      type: 'ResNetBottleneck'
+      inplanes: 2048
+      planes: 2048
+      stride: 1
+
+    avg_pool:
+      type: 'nn.AdaptiveAvgPool2d'
+      args: [1]
+    flatten:
+      type: 'Flatten'
+      dim: 1
+    fc1:
+      type: 'nn.Linear'
+      args: [2048, 2048]
+    fc1_relu:
+      type: 'nn.ReLU'
+      inplace: True
+    fc:
+      type: 'nn.Linear'
+      args: [2048, 257]
+
+loss:
+  nll:
+    type: 'nn.CrossEntropyLoss'
+
+metrics:
+  cleanacc:
+    type: 'Accuracy'
+    topk: 1
+
+
+evaluations:
+  auto_attack_linf:
+    type: 'AutoAttackAccuracy'
+    eval_freq: [15, 51, 76, 100]
+    robust_logit_index: 
+    batch_size: 100
+    n_samples: 1000
+    # attacks_to_run: ['apgd-ce', 'apgd-t']
+    norm_p: .inf
+    data_mean: [0, 0, 0]
+    data_std: [1, 1, 1]
+    epsilons: [0.031372549019608]  #2/255, 4/255, 8/255
+
+
+training:
+  epochs: 101
+  batch_size: 128  # batch size for training
+  
+  sync_bn: True
+  workers: 16  # data loader workers
+  train_gpu: [0]
+
+  print_freq: 10
+  save_freq: 1
+  save_path: exp/caltech256/Linf_transferred_from_imagenet200_SESAT_weightedincreasing2to10a/$MODELNAME/model
+
+  pretrained_weights: exp/imagenet200/Linf_weightedincreasing2to10_esat_pgd7_increasing_entropy/resnet50_A7.PGDs0.5i7e3.0_B3.none/model/best_rob_acc.pth
+  # resume: exp/cifar100/vanilla_pgd7/$MODELNAME/model/best_rob_acc.pth
+  # evaluate_only: True 
+  freeze_bn: True
+
+  optimizer:
+    type: 'SGD'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 1.e-4
+    layers: ['fc1', 'fc']
+  lrscheduler:
+    type: 'MultiStepLR'
+    gamma: 0.1
+    milestones: [9550, 14325]  # total Caltech batches: 191
+    
+
+validate:
+  batch_size: 1000 # batch size for validation during training, memory and speed tradeoff
+  print_freq: 10

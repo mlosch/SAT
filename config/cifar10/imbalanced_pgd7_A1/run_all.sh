@@ -1,0 +1,10 @@
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it00.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it01.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it02.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it03.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it04.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it05.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it06.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it07.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it08.yaml
+python -m tool.train --config config/cifar10/imbalanced_pgd7_A1/preactresnet18bn_mpO1_A1.PGDs0.1i7e0.5_B9.none_it09.yaml
