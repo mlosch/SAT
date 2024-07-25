@@ -12,6 +12,7 @@ training_data:
   kwargs:
     root: '~/data/'
     train: True
+    download: True
   transformation:
     crop:
       type: 'torchvision.transforms.RandomCrop'
